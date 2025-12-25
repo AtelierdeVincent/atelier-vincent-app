@@ -397,17 +397,18 @@ elif page == "➕ Saisie":
         submit = st.form_submit_button("✅ Enregistrer", use_container_width=True)
         
         if submit:
-            if montant_saisie > 0:
-                st.success(f"✅ Transaction enregistrée : {formater_euro(montant_saisie)} le {date_saisie.strftime('%d/%m/%Y')}")
-               ajouter_transaction(
-    "CA_Atelier_Vincent_B2C2_vers_D4E4.xlsm",
-    date_saisie,
-    montant_saisie,
-    notes
-)
-st.success("✅ Transaction enregistrée dans Excel !")
-            else:
-                st.error("❌ Le montant doit être supérieur à 0 €")
+    if montant_saisie > 0:
+        ajouter_transaction(
+            "CA_Atelier_Vincent_B2C2_vers_D4E4.xlsm",
+            date_saisie,
+            montant_saisie,
+            notes
+        )
+
+        st.success(f"✅ Transaction enregistrée : {formater_euro(montant_saisie)} le {date_saisie.strftime('%d/%m/%Y')}")
+        st.info("📁 Les données ont été ajoutées à votre fichier Excel.")
+    else:
+        st.error("❌ Le montant doit être supérieur à 0 €")
 
 # ==================== PAGE DONNÉES BRUTES ====================
 
