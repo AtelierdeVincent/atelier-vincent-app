@@ -25,6 +25,42 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ==================== PROTECTION PAR MOT DE PASSE ====================
+
+def verifier_mot_de_passe():
+    """Retourne True si le mot de passe est correct."""
+    
+    def password_entered():
+        """Vérifie si le mot de passe est correct."""
+        if st.session_state["password"] == "3108":  # ← CHANGEZ LE MOT DE PASSE ICI !
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]
+        else:
+            st.session_state["password_correct"] = False
+
+    # Retourne True si le mot de passe est déjà validé
+    if st.session_state.get("password_correct", False):
+        return True
+
+    # Afficher le formulaire de connexion
+    st.title("🔒 L'Atelier de Vincent")
+    st.markdown("### Veuillez vous connecter pour accéder à l'application")
+    
+    st.text_input(
+        "Mot de passe", 
+        type="password", 
+        on_change=password_entered, 
+        key="password",
+        placeholder="Entrez le mot de passe"
+    )
+    
+    if "password_correct" in st.session_state:
+        st.error("😕 Mot de passe incorrect. Réessayez.")
+    
+    st.info("💡 Le mot de passe par défaut est : **MonMotDePasse123**")
+    
+    return False
+
 # ==================== FONCTIONS UTILES ====================
 
 @st.cache_data  # Cette ligne met les données en cache pour aller plus vite
@@ -86,6 +122,11 @@ page = st.sidebar.radio(
 
 st.sidebar.markdown("---")
 st.sidebar.info("💡 Application créée pour gérer votre chiffre d'affaires")
+
+# ==================== VÉRIFICATION DU MOT DE PASSE ====================
+# Cette ligne empêche l'accès à l'app sans le bon mot de passe
+if not verifier_mot_de_passe():
+    st.stop()  # Arrête l'app si le mot de passe n'est pas correct
 
 # ==================== CHARGEMENT DES DONNÉES ====================
 
