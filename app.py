@@ -101,6 +101,46 @@ def formater_euro(montant):
     Exemple : 1500.5 → 1 500,50 €
     """
     return f"{montant:,.2f} €".replace(",", " ").replace(".", ",")
+from openpyxl import load_workbook
+import locale
+
+# Pour avoir les jours/mois en français
+locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
+
+def ajouter_transaction(fichier_excel, date, montant, notes=""):
+    """
+    Ajoute une nouvelle ligne dans la feuille 'Données' du fichier Excel.
+    La ligne contient : clé, année, date, jour, mois, montant, notes.
+    """
+    try:
+        wb = load_workbook(fichier_excel)
+        ws = wb["Données"]
+
+        # Trouver la prochaine ligne vide
+        next_row = ws.max_row + 1
+
+        # Générer la clé (AAAA-MM-JJ)
+        cle = date.strftime("%Y-%m-%d")
+
+        # Extraire les infos
+        annee = date.year
+        jour = date.strftime("%A")      # Lundi, Mardi...
+        mois = date.strftime("%B")      # janvier, février...
+
+        # Écrire dans Excel
+        ws.cell(row=next_row, column=1).value = cle
+        ws.cell(row=next_row, column=2).value = annee
+        ws.cell(row=next_row, column=3).value = date.strftime("%d/%m/%Y")
+        ws.cell(row=next_row, column=4).value = jour
+        ws.cell(row=next_row, column=5).value = mois
+        ws.cell(row=next_row, column=6).value = montant
+        ws.cell(row=next_row, column=7).value = notes
+
+        # Sauvegarder
+        wb.save(fichier_excel)
+
+    except Exception as e:
+        st.error(f"Erreur lors de l'ajout de la transaction : {e}")
 
 # ==================== SIDEBAR (MENU LATÉRAL) ====================
 
@@ -359,7 +399,13 @@ elif page == "➕ Saisie":
         if submit:
             if montant_saisie > 0:
                 st.success(f"✅ Transaction enregistrée : {formater_euro(montant_saisie)} le {date_saisie.strftime('%d/%m/%Y')}")
-                st.info("💡 Note : Dans cette version de démonstration, les données ne sont pas encore sauvegardées dans Excel. Cette fonctionnalité sera ajoutée prochainement.")
+               ajouter_transaction(
+    "CA_Atelier_Vincent_B2C2_vers_D4E4.xlsm",
+    date_saisie,
+    montant_saisie,
+    notes
+)
+st.success("✅ Transaction enregistrée dans Excel !")
             else:
                 st.error("❌ Le montant doit être supérieur à 0 €")
 
