@@ -63,8 +63,8 @@ def verifier_mot_de_passe():
 
 # ==================== FONCTIONS UTILES ====================
 
-@st.cache_data  # Cette ligne met les données en cache pour aller plus vite
 def charger_donnees(fichier_excel):
+
     """
     Charge les données depuis votre fichier Excel
     Équivalent à : ouvrir votre fichier Excel et lire la feuille "Données"
